@@ -1,0 +1,46 @@
+a { /*선택자, selector*/
+    color: black;   /* 효과, declaration / color: 속성(property), black: 값(value)*/
+    text-decoration: none;
+}
+h1 {
+    font-size: 45px;
+    text-align: center; /*align 정렬*/
+    border-bottom: 1px solid gray;
+    margin: 0;
+    padding: 20px;
+}
+#grid ol {
+    border-right: 1px solid gray;
+    width: 100px;
+    margin: 0;
+    padding: 10px;
+    padding-left: 32px;
+}
+body {
+    margin: 0;
+}
+#grid {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    /*columns: 열, rows: 행*/
+}
+#article {
+    padding: 10px;
+}
+/*
+선택자
+class: 여러개를 사용할 수 있다.
+id: class보다 우선순위가 높다. 1번밖에 사용 못한다.
+id > class > tag
+*/
+@media(max-width:800px) {
+    #grid {
+    display: block;
+    }
+    #grid ol {
+    border-right: none;
+    }
+    h1 {
+        border-bottom: none;
+    }
+}
