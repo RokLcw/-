@@ -15,13 +15,7 @@
                 margin: 0;
                 padding: 20px;
             }
-            #active {
-                color:red;
-            }
-            .saw {
-                color:gray;
-            }
-            ol {
+            #grid ol {
                 border-right: 1px solid gray;
                 width: 100px;
                 margin: 0;
@@ -45,6 +39,17 @@
             id: class보다 우선순위가 높다. 1번밖에 사용 못한다.
             id > class > tag
             */
+            @media(max-width:800px) {
+                #grid {
+                display: block;
+                }
+                #grid ol {
+                border-right: none;
+                }
+                h1 {
+                    border-bottom: none;
+                }
+            }
         </style>
         <!--style 태그 안쪽은 css-->
     </head>
@@ -52,8 +57,8 @@
         <h1><a href="index.html">WEB</a></h1>
         <div id="grid">
             <ol>
-                <li><a href="1.html" class="saw">HTML</a></li>
-                <li><a href="2.html" class="saw" id="active">CSS</a></li> 
+                <li><a href="1.html">HTML</a></li>
+                <li><a href="2.html">CSS</a></li> 
                 <!--style 속성: css의 효과를 값으로 사용-->
                 <li><a href="3.html">JavaScript</a></li>
             </ol> <!--ol: block level element-->
