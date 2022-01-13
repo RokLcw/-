@@ -1,0 +1,46 @@
+<!DOCTYPE html> <!--이 문서는 html 이다.-->
+<html>
+    <head>
+        <title>WEB1-CSS</title>
+        <meta charset="utf-8">
+        <style> 
+            a { /*선택자, selector*/
+                color: black;   /* 효과, declaration / color: 속성(property), black: 값(value)*/
+                text-decoration: none;
+            }
+            h1 {
+                font-size: 45px;
+                text-align: center; /*align 정렬*/
+            }
+            #active {
+                color:red;
+            }
+            .saw {
+                color:gray;
+            }
+            /*
+            선택자
+            class: 여러개를 사용할 수 있다.
+            id: class보다 우선순위가 높다. 1번밖에 사용 못한다.
+            id > class > tag
+            */
+        </style>
+        <!--style 태그 안쪽은 css-->
+    </head>
+    <body>
+        <h1><a href="index.html">WEB</a></h1>
+        <ol>
+            <li><a href="1.html" class="saw">HTML</a></li>
+            <li><a href="2.html" class="saw" id="active">CSS</a></li> 
+            <!--style 속성: css의 효과를 값으로 사용-->
+            <li><a href="3.html">JavaScript</a></li>
+        </ol>
+        <h2>CSS</h2>
+        <p>Cascading Style Sheets (CSS) is a style sheet language used for describing the 
+        presentation of a document written in a markup language such as HTML. 
+        CSS is a cornerstone technology of the World Wide Web, alongside HTML and JavaScript.</p>
+        <p>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/ONcmkf07EuI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </p>
+    </body>
+</html>
