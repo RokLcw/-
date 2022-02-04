@@ -1,25 +1,29 @@
 function nightDayHandler(self){ // 함수 선언 및 매개변수 전달
     // var target = document.querySelector('body');    // body 태그를 가리키는 변수
     // var alist = document.querySelectorAll('a');
-    var i=0;
     
     var links = {
         setcolor: function(color) {
-            var alist = document.querySelectorAll('a');
+            // var alist = document.querySelectorAll('a');
+            // var i=0;
 
-            while (i < alist.length) {
-            alist[i].style.color = color;
-            i = i+1;
-            }
+            // while (i < alist.length) {
+            // alist[i].style.color = color;
+            // i = i+1;
+            // }
+
+            $('a').css('color', color); // jquery
         }
     }
 
     var body = {
         setColor: function (color) {
-            document.querySelector('body').style.color = color; 
+            // document.querySelector('body').style.color = color; 
+            $('body').css('color', color);  // jquery
         },
         setBackgroundColor: function (color) {
-            document.querySelector('body').style.backgroundColor = color;
+            // document.querySelector('body').style.backgroundColor = color;
+            $('body').css('backgroundColor', color);    // jquery
         }
     }
 
