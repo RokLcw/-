@@ -1,0 +1,31 @@
+body {
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+h1 {
+    text-align: center;
+    font-size: 40px;
+    border-bottom: 1px solid gray;
+    padding: 15px;
+    margin: 0;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+}
+
+#list{
+    border-right: 1px solid gray;
+    margin: 0;
+    padding-top: 10px;
+}
+
+#contents {
+    padding: 10px;
+}
