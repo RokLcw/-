@@ -4,6 +4,53 @@
         <title>WEB2-JavaScript</title>
         <meta charset="utf-8">
         <link rel="stylesheet" href="style.css">
+        <script>
+            function nightDayHandler(self){ // 함수 선언 및 매개변수 전달
+                // var target = document.querySelector('body');    // body 태그를 가리키는 변수
+                // var alist = document.querySelectorAll('a');
+                var i=0;
+                
+                var links = {
+                    setcolor: function(color) {
+                        var alist = document.querySelectorAll('a');
+
+                        while (i < alist.length) {
+                        alist[i].style.color = color;
+                        i = i+1;
+                        }
+                    }
+                }
+
+                var body = {
+                    setColor: function (color) {
+                        document.querySelector('body').style.color = color; 
+                    },
+                    setBackgroundColor: function (color) {
+                        document.querySelector('body').style.backgroundColor = color;
+                    }
+                }
+
+                if(self.value == 'night') {
+                    body.setColor('white'); // 객체 사용
+                    body.setBackgroundColor('black');
+                    // target.style.backgroundColor='black';    // 속성(?) 사용
+                    // target.style.color='white';
+                    self.value = 'day'; // onclick 이벤트가 속해있는 input 태그를 가리킴
+
+                    links.setcolor('powderblue');
+                    // while (i < alist.length) {
+                    //     alist[i].style.color = 'powderblue';
+                    //     i = i+1;
+                    // }
+                } else {
+                    body.setColor('black');
+                    body.setBackgroundColor('white');
+                    self.value = 'night';
+
+                    links.setcolor('black');
+                }
+            }
+        </script>
     </head>
     <body>
         <h1><a href="index.html">WEB</a></h1>
@@ -22,58 +69,13 @@
                 <li><a href="3.html">JavaScript</a></li>
             </ol>
             <div id="contents">
-                <input type="button" value="night" onclick="
-                    var target = document.querySelector('body');    // body 태그를 가리키는 변수
-                    var alist = document.querySelectorAll('a');
-                    var i=0;
-                    if(this.value == 'night') {
-                        target.style.backgroundColor='black';
-                        target.style.color='white';
-                        this.value = 'day'; // onclick 이벤트가 속해있는 input 태그를 가리킴
-
-                        while (i < alist.length) {
-                            alist[i].style.color = 'powderblue';
-                            i = i+1;
-                        }
-                    } else {
-                        target.style.backgroundColor='white';
-                        target.style.color='black';
-                        this.value = 'night';
-
-                        while (i < alist.length) {
-                            alist[i].style.color = 'black';
-                            i = i+1;
-                        }
-                    }
-                ">
                 <h2>JavaScript</h2>
                 <p>JavaScript, often abbreviated JS, is a programming language that is one of the core technologies of the World Wide Web, alongside HTML and CSS.
                 Over 97% of websites use JavaScript on the client side for web page behavior, often incorporating third-party libraries.
                 All major web browsers have a dedicated JavaScript engine to execute the code on users' devices.
                 </p>
                 <input type="button" value="night" onclick="
-                    var target = document.querySelector('body');    // body 태그를 가리키는 변수
-                    var alist = document.querySelectorAll('a');
-                    var i=0;
-                    if(this.value == 'night') {
-                        target.style.backgroundColor='black';
-                        target.style.color='white';
-                        this.value = 'day'; // onclick 이벤트가 속해있는 input 태그를 가리킴
-
-                        while (i < alist.length) {
-                            alist[i].style.color = 'powderblue';
-                            i = i+1;
-                        }
-                    } else {
-                        target.style.backgroundColor='white';
-                        target.style.color='black';
-                        this.value = 'night';
-
-                        while (i < alist.length) {
-                            alist[i].style.color = 'black';
-                            i = i+1;
-                        }
-                    }
+                    nightDayHandler(this);  // 함수 불러오기 및 인자 전달
                 ">
             </div>
         </div>
