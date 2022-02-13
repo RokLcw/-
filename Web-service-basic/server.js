@@ -5,13 +5,18 @@ const app = express();
 // parser (전송값)
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended : true}));
+//method-override
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
 // ejs
 app.set('view engine', 'ejs');
 //MongoDB
 const MongoClient = require('mongodb').MongoClient;
 
+app.use('/public', express.static('public'));   // 미들웨어?
+
 var db;
-MongoClient.connect('',function(error, client) {
+MongoClient.connect ('',function(error, client) {
     if(error) {return console.log(error)};
     db = client.db('Basic');
 
@@ -40,11 +45,12 @@ app.get('/beauty', (request, response) => {
 
 app.get('/', function(request, response) {
     console.log(__dirname);
-    response.sendFile(__dirname + '/index.html');
+    response.render('index.ejs');
 });
 
 app.get('/write', function(request, response) { // 누군가 /write로 접속하면 write.html 파일을 보내준다
-    response.sendFile(__dirname + '/write.html');
+    // response.sendFile(__dirname + '/write.html');
+    response.render('write.ejs')
 });
 
 app.post('/add', function(request, response) {
@@ -53,7 +59,8 @@ app.post('/add', function(request, response) {
     console.log(request.body.title);
     console.log(request.body.date);
 
-    totalPost = db.collection('counter').findOne({name : '게시물갯수'}, function(error, result) {
+    db.collection('counter').findOne({name : '게시물갯수'}, function(error, result) {
+        console.log(result);
         console.log(result.totalPost);
         let 총게시물갯수 = result.totalPost;
 
@@ -87,5 +94,29 @@ app.delete('/delete', function(request, response) {
     request.body._id = parseInt(request.body._id); // 정수변환
     db.collection('post').deleteOne(request.body, function(error, result){
         console.log('삭제완료');
+        response.status(200).send({message : '성공했습니다'});   // 응답코드 & 메세지
     });
 });
+
+app.get('/detail/:id', function(request, response) { // 어떤놈이 detail/어쩌구로 get 요청을 하면~ (url 파라미터(:id) 이용)
+    db.collection('post').findOne({_id : parseInt(request.params.id)}, function(error, result){   // findOne({_id : request.params.id} : url의 파라미터중 id라는 이름을 가진 값
+        console.log(result);
+        response.render('detail.ejs', {data : result});  // 해석필요 (detail.ejs 파일에 data:result 객체를 보내주세요)
+    });
+});
+
+app.get('/edit/:id', function(request, response) {
+    db.collection('post').findOne({_id : parseInt(request.params.id)}, function(error, result){
+        response.render('edit.ejs', {editData : result});
+    })
+});
+
+app.put('/edit', function(request, response) {
+    db.collection('post').updateOne({_id : parseInt(request.body.id)}, {$set : {title : request.body.title, date : request.body.date}}, function(error, result) {
+        if(error) {
+            return console.log(error);
+        }
+        console.log('수정완료');
+        response.redirect('/list');
+    })
+})
