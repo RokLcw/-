@@ -8,6 +8,15 @@ app.use(bodyParser.urlencoded({extended : true}));
 //method-override
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
+// passport (session)
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+app.use(session({secret : '비밀코드', resave : true, saveUninitialized : false}));
+app.use(passport.initialize());
+app.use(passport.session());    // 미들웨어: 요청과 응답 중간에 뭔가 실행되는 코드
+// dotenv
+require('dotenv').config()
 // ejs
 app.set('view engine', 'ejs');
 //MongoDB
@@ -16,7 +25,7 @@ const MongoClient = require('mongodb').MongoClient;
 app.use('/public', express.static('public'));   // 미들웨어?
 
 var db;
-MongoClient.connect ('',function(error, client) {
+MongoClient.connect (process.env.DB_URL,function(error, client) {
     if(error) {return console.log(error)};
     db = client.db('Basic');
 
@@ -24,7 +33,7 @@ MongoClient.connect ('',function(error, client) {
     //     console.log('저장완료');
     // });
 
-    app.listen(8080, function() {   // 포트번호, 띄운 후 실행할 코드
+    app.listen(process.env.PORT, function() {   // 포트번호, 띄운 후 실행할 코드
         console.log('listen on 8080');
     });
 });
@@ -118,5 +127,59 @@ app.put('/edit', function(request, response) {
         }
         console.log('수정완료');
         response.redirect('/list');
+    })
+})
+
+app.get('/login', function(request, response) {
+    response.render('login.ejs');
+});
+
+app.post('/login', passport.authenticate('local', { // local 이라는 방식으로 인증, 미들웨어 사용, 미들웨어(id, 비번 검사)가 통과되면 function이 실행됨
+    failureRedirect : '/fail'   // 실패하면 fail 경로로 이동
+}), function(request, response) {
+    response.redirect('/'); // 로그인 성공하면 redirect
+});
+
+app.get('/mypage', 로그인했니, function(request, response) {    // 로그인했니 : 미들웨어
+    console.log(request.user);
+    response.render('mypage.ejs', { 사용자: request.user })
+});
+
+function 로그인했니(request, response, next) {
+    console.log(request.user);
+    if(request.user) {  // request.user: 로그인 후 세션이 있으면 requset.user가 항상 있음.
+        next()
+    } else {
+        response.send('로그인안하셨는데요?')
+    }
+}
+
+
+passport.use(new LocalStrategy({    // LocalStrategy 인증 방식
+    usernameField: 'id',
+    passwordField: 'pw',
+    session: true,
+    passReqToCallback: false,
+  }, function (입력한아이디, 입력한비번, done) {
+    console.log(입력한아이디, 입력한비번);
+    db.collection('login').findOne({ id: 입력한아이디 }, function (에러, 결과) {
+      if (에러) return done(에러)
+  
+      if (!결과) return done(null, false, { message: '존재하지않는 아이디요' }) // done(서버에러, 성공시사용자DB데이터, 에러메세지)
+      if (입력한비번 == 결과.pw) {
+        return done(null, 결과)
+      } else {
+        return done(null, false, { message: '비번틀렸어요' })
+      }
+    })
+}));
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id)
+})
+
+passport.deserializeUser(function(아이디, done) {
+    db.collection('login').findOne({ id: 아이디 }, function (error, result) {
+        done(null, result)
     })
 })
