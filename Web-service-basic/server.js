@@ -12,6 +12,7 @@ app.use(methodOverride('_method'));
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const { ConnectionCheckedInEvent } = require('mongodb');
 app.use(session({secret : '비밀코드', resave : true, saveUninitialized : false}));
 app.use(passport.initialize());
 app.use(passport.session());    // 미들웨어: 요청과 응답 중간에 뭔가 실행되는 코드
@@ -72,8 +73,9 @@ app.post('/add', function(request, response) {
         console.log(result);
         console.log(result.totalPost);
         let 총게시물갯수 = result.totalPost;
+        let 저장할거 = { _id : 총게시물갯수 + 1, title : request.body.title, date : request.body.date, writer : request.user.id};   // request.user.id: 유저의 id 정보를 불러옴
 
-        db.collection('post').insertOne({ _id : 총게시물갯수 + 1, title : request.body.title, date : request.body.date}, function(error, result) {
+        db.collection('post').insertOne(저장할거, function(error, result) {
             console.log('저장완료');
             db.collection('counter').updateOne({name : '게시물갯수'}, { $inc: {totalPost : 1}}, function(error, result) {
                 // $inc: {totalPost : 1}} : inc: 증가시켜주는 operator
@@ -99,9 +101,11 @@ app.get('/list', function(request, response) {
 });
 
 app.delete('/delete', function(request, response) {
-    console.log(request.body);
-    request.body._id = parseInt(request.body._id); // 정수변환
-    db.collection('post').deleteOne(request.body, function(error, result){
+    // console.log(request.body);
+    // request.body._id = parseInt(request.body._id); // 정수변환
+
+    var 삭제할데이터 = {_id : request.body._id, writer : request.user.id}
+    db.collection('post').deleteOne(삭제할데이터, function(error, result){
         console.log('삭제완료');
         response.status(200).send({message : '성공했습니다'});   // 응답코드 & 메세지
     });
@@ -183,3 +187,40 @@ passport.deserializeUser(function(아이디, done) {
         done(null, result)
     })
 })
+
+app.get('/search', (request, response) => {
+    var 검색조건 = [
+        {
+            $search: {
+                index: 'titleSearch',
+                text: {
+                  query: request.query.value,   // 검색어
+                  path: 'title'  // 제목날짜 둘다 찾고 싶으면 ['제목', '날짜']
+                }
+              }
+        },
+        { $sort : { _id : 1 } },    // 오름차순 정렬
+        { $limit : 10 },    // 최대로 가져올 데이터
+        { $project : { title : 1, _id : 0, score: {$meta: "searchScore"}} }    // 내가 원하는 데이터만 보여주고 싶을때 사용
+    ];
+    console.log(request.query.value); // 쿼리스트링 데이터
+    // request.body -> FORM 태그 POST 데이터
+    db.collection('post').aggregate(검색조건).toArray( function (error, result) {
+        console.log(result);
+        response.render('search.ejs', { search: result })
+    });
+});
+// aggregate: 조건을 여러개 둘 수 있음
+
+app.post('/register', function(request, response) {
+
+    db.collection('login').findOne({id : request.body.id}, function(error, result) {
+        if(!result) {
+            db.collection('login').insertOne({ id : request.body.id, pw : request.body.pw}, function(error, result) {
+                response.send('회원가입 완료.');
+            })
+        } else {
+            response.send('이미 있는 아이디요.');
+        }
+    })
+});
