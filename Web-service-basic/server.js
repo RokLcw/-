@@ -1,5 +1,5 @@
 // express
-const { response } = require('express');
+const { response, request } = require('express');
 const express = require('express');
 const app = express();
 // parser (전송값)
@@ -256,10 +256,33 @@ app.get('/upload', function(request, response) {
     response.render('upload.ejs')
 })
 
-app.post('/upload', upload.single('profile'), function(request, response) { // 여러개 업로드 : upload.array('', 최대개수) -> form 태그도 수정 필요
+app.post('/upload', upload.single('profile'), function(request, response) { // 여러개 업로드 : upload.array('', 최대개수) -> form 태그도 수정 필요 / single('input의 name 속성값)
     response.send('업로드 완료');
 });
 
 app.get('/image/:imageName', function(request, response) {
     response.sendFile(__dirname + '/public/image/' + request.params.imageName);
+})
+
+app.post('/chatting', function(request, response) {
+    let day = new Date();
+
+    db.collection('counter').findOne({name : '채팅갯수'}, function(error, result) {
+        let 총채팅방갯수 = result.totalChat;
+
+        let 저장할거 = {member : [request.body.writer, request.user.id], date : day, title : '채팅방' + String(총채팅방갯수)};
+
+        db.collection('chatroom').insertOne(저장할거, function(error, result) {
+            console.log('추가완료');
+            db.collection('counter').updateOne({name : '채팅갯수'}, { $inc: {totalChat : 1}}, function(error, result) {
+            })
+        })
+    })
+})
+
+app.get('/chat', function(request, response) {
+
+    db.collection('chatroom').find({member : request.user.id}).toArray( function(error, result) {
+        response.render('chat.ejs', {chatList : result});
+    })
 })
