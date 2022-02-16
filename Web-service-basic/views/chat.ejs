@@ -13,24 +13,39 @@
     <title>Hello, world!</title>
   </head>
   <body>
-    <!-- html 조립식 개발, 첨부 (ejs에서만 가능 혹은 jquery) -->
     <%- include('nav.html')%>
-    
-    <div class="container mt-4">
-        <h4 class="text-center">상세페이지</h4>
+    <div class="container p-4 detail">
 
-        <!-- <h4>제목: <%= data.title%></h4>
-        <h4>날짜: <%= data.date%></h4> -->
-
-        <div class="card" style="width: 100%;">
-            <div class="card-body">
-            <h5 class="card-title"><%= data.title%></h5>
-            <h6 class="card-subtitle mb-2 text-muted">날짜: <%= data.date%></h6>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <a href="/edit/<%= data._id%>" class="card-link">수정하기</a>
+        <div class="row">
+          <div class="col-3">
+            <ul class="list-group chat-list">
+              <%for(var i=0; i<chatList.length; i++) {%>
+              <li class="list-group-item" data-id="">
+                <h6><%= chatList[i].title%></h6>
+                <h6 class="text-small"><%=chatList[i].member[0]%> & <%=chatList[i].member[1]%></h6>
+              </li>
+              <% } %>
+             </ul>
+           </div>
+      
+           <div class="col-9 p-0">
+             <div class="chat-room">
+                <ul class="list-group chat-content">
+                  <li><span class="chat-box">채팅방1 내용</span></li>
+                  <li><span class="chat-box">채팅방1 내용</span></li>
+                  <li><span class="chat-box mine">채팅방1 내용</span></li>
+                </ul>
+              <div class="input-group">
+                <input class="form-control" id="chat-input">
+                <button class="btn btn-secondary" id="send">전송</button>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+      
+      </div> 
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 
     <!-- Optional JavaScript; choose one of the two! -->
 

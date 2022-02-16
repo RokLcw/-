@@ -52,11 +52,15 @@
         <% for (var i=0; i<posts.length; i++) { %>
         <li class="list-group-item">
           <div>글번호: <%= posts[i]._id%></div>
-          <div>할일 제목: <%= posts[i].title %></div>
+          <div><a href="/detail/<%= posts[i]._id%>">할일 제목: <%= posts[i].title %></a></div>
           <div>할일 마감날짜 : <%= posts[i].date %></div>
           <div>작성자 : <%= posts[i].writer %></div>
           <button class="btn btn-danger delete" data-id="<%= posts[i]._id%>">삭제</button>
-          <button class="btn btn-danger edit" onclick="location.href='/edit/<%= posts[i]._id%>'">수정</button>
+          <button class="btn btn-danger" onclick="location.href='/edit/<%= posts[i]._id%>'">수정</button>
+          <form action="/chatting" method="POST">
+            <input type="text" name="writer" value="<%= posts[i].writer%>" style="display: none">
+            <button class="btn btn-danger">이 유저와 채팅</button>
+          </form>
         </li>
         <% } %>
       </ul>
