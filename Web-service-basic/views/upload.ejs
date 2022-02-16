@@ -8,24 +8,15 @@
   <title>Document</title>
 </head>
 <body>
-  <%- include('nav.html')%>
+    <%- include('nav.html')%>
 
-  <h4 class="container mt-4"><strong>글 작성페이지</strong></h4>
+  <h4 class="container mt-4"><strong>업로드 페이지</strong></h4>
 
-  <div class="container mt-3">
-    <form action="/add" method="POST"> 
-        <!-- form에 적은 정보들을 서버로 전달하기 위한 필수 속성 action, method -->
-      <div class="form-group">
-        <label>오늘의 할일</label>
-        <input type="text" class="form-control" name="title">
-      </div>
-      <div class="form-group">
-        <label>날짜</label>
-        <input type="text" class="form-control" name="date">
-      </div>
-      <button type="submit" class="btn btn-outline-secondary">Submit</button>
-    </form>
-  </div>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+      <!-- enctype 속성 -->
+      <input type="file" name="profile">
+      <button type="submit">전송</button>
+  </form>
 
 
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
