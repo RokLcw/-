@@ -16,6 +16,8 @@ const { ConnectionCheckedInEvent } = require('mongodb');
 app.use(session({secret : '비밀코드', resave : true, saveUninitialized : false}));
 app.use(passport.initialize());
 app.use(passport.session());    // 미들웨어: 요청과 응답 중간에 뭔가 실행되는 코드
+// multer
+let multer = require('multer');
 // dotenv
 require('dotenv').config()
 // ejs
@@ -43,15 +45,15 @@ MongoClient.connect (process.env.DB_URL,function(error, client) {
 //     console.log('listen on 8080');
 // });
 
-app.get('/pet', function(request, response) {   // pet이라는 get 요청이 들어오면 아래 코드를 response 해줌
-    response.send('<script>alert("펫 용품을 쇼핑할 수 있는 페이지입니다.")</script>');
-});
+// app.get('/pet', function(request, response) {   // pet이라는 get 요청이 들어오면 아래 코드를 response 해줌
+//     response.send('<script>alert("펫 용품을 쇼핑할 수 있는 페이지입니다.")</script>');
+// });
 
-// 함수안에 함수: 콜백함수, 순차적으로 실행하고 싶을때 사용
+// // 함수안에 함수: 콜백함수, 순차적으로 실행하고 싶을때 사용
 
-app.get('/beauty', (request, response) => {   
-    response.send('<script>alert("뷰티 용품을 쇼핑할 수 있는 페이지입니다.")</script>');
-});
+// app.get('/beauty', (request, response) => {   
+//     response.send('<script>alert("뷰티 용품을 쇼핑할 수 있는 페이지입니다.")</script>');
+// });
 
 app.get('/', function(request, response) {
     console.log(__dirname);
@@ -73,7 +75,7 @@ app.post('/add', function(request, response) {
         console.log(result);
         console.log(result.totalPost);
         let 총게시물갯수 = result.totalPost;
-        let 저장할거 = { _id : 총게시물갯수 + 1, title : request.body.title, date : request.body.date, writer : request.user.id};   // request.user.id: 유저의 id 정보를 불러옴
+        let 저장할거 = { _id : 총게시물갯수 + 1, title : request.body.title, date : request.body.date, writer : request.user.id};   // request.user.id: 유저의 id 정보를 불러옴 (세션때문에 가능한듯?)
 
         db.collection('post').insertOne(저장할거, function(error, result) {
             console.log('저장완료');
@@ -212,7 +214,7 @@ app.get('/search', (request, response) => {
 });
 // aggregate: 조건을 여러개 둘 수 있음
 
-app.post('/register', function(request, response) {
+app.post('/register', function(request, response) { // 이런걸 라우팅이라고 함, 코드는 라우트
 
     db.collection('login').findOne({id : request.body.id}, function(error, result) {
         if(!result) {
@@ -224,3 +226,40 @@ app.post('/register', function(request, response) {
         }
     })
 });
+
+app.use('/shop', require('./routes/shop.js'))   // 누군가 / 경로로 요청하면 오른쪽 파라미터 값(미들웨어, 라우터)을 적용해주세요.
+
+app.use('/board/sub', require('./routes/board.js'));
+
+var storage = multer.diskStorage({
+    destination : function(req, file, cb) {
+        cb(null, './public/image')
+    },
+    filename : function(req, file, cb) {
+        cb(null, file.originalname) // cb(null, file.originalname + '날짜') 이런식으로도 가능
+    },
+    fileFilter: function (req, file, callback) {
+        var ext = path.extname(file.originalname);
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
+            return callback(new Error('PNG, JPG만 업로드하세요'))
+        }
+        callback(null, true)
+    },
+    limits:{
+        fileSize: 1024 * 1024
+    }
+})
+
+var upload = multer({storage : storage});
+
+app.get('/upload', function(request, response) {
+    response.render('upload.ejs')
+})
+
+app.post('/upload', upload.single('profile'), function(request, response) { // 여러개 업로드 : upload.array('', 최대개수) -> form 태그도 수정 필요
+    response.send('업로드 완료');
+});
+
+app.get('/image/:imageName', function(request, response) {
+    response.sendFile(__dirname + '/public/image/' + request.params.imageName);
+})
